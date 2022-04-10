@@ -1,17 +1,29 @@
 #!/bin/bash
-file_name=$1
-path=$(pwd)
-base_name=$(basename "$file_name")
+full_name="$1"
+aws_sam_path="$2"
+base_name=$(basename "$full_name")
+relative_path=$(realpath --relative-to="$(pwd)" "$full_name")
 
-if [[ -f "$file_name" ]]; then
-	# echo "${1} changed"
-	if [[ "$base_name" = "requirements.txt" ]]; then
-		sam build
-	else
-		cp -f "$1" "${path}/.aws-sam/build/LambdaCrud/${base_name}"
+run_process() {
+	echo "Samio: ${1}"
+	if ! $1; then
+		echo "Samio: stopped!"
+		exit 0
 	fi
-fi
+}
 
-if [[ -d "$1" ]]; then
-	sam build --cached
+if [[ -f "$full_name" ]]; then
+
+	case "$base_name" in
+	"requirements.txt" | "template.yaml" | "template.yml")
+		run_process "sam build --cached"
+		;;
+	*)
+		run_process "cp ${relative_path} ${aws_sam_path}/${relative_path}"
+		;;
+	esac
+elif [[ -d "$full_name" ]]; then
+	run_process "sam build --cached"
+else
+	echo "Nothing to do: ${full_name}"
 fi

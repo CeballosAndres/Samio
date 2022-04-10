@@ -1,7 +1,7 @@
 #!/bin/bash
-
+aws_sam_path=.aws-sam/build/LambdaCrud
 # Commands
-p_sam_build="sam build"
+p_sam_build="sam build --cached"
 p_start_api="sam local start-api"
 
 # Check fswatch
@@ -12,11 +12,11 @@ if ! command -v fswatch &>/dev/null; then
 fi
 
 run_process() {
-	echo "Start: ${1}"
+	echo "Samio: ${1}"
 	if $1; then
-		echo "Completed: ${1}"
+		echo "Done!"
 	else
-		echo "Process stopped!"
+		echo "Samio: stopped!"
 		exit 1
 	fi
 }
@@ -26,5 +26,5 @@ run_process "$p_sam_build"
 (
 	trap 'kill 0' SIGINT
 	run_process "$p_start_api" &
-	fswatch -e ".aws-sam" -e ".git" . | xargs -n1 -I{} ~/samio/scripts/build.sh {}
+	fswatch --event Created --event Updated --event Renamed -e ".aws-sam" -e ".git" -e ".*.tmp$" -e ".*~$" -e ".*4913$" . | xargs -n 1 -I{} ~/samio/scripts/build.sh {} "$aws_sam_path"
 )
