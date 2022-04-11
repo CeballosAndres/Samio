@@ -2,10 +2,16 @@
 
 A simple script to work with AWS SAM in develop.
 
+## Requirements
+
+- AWS SAM CLI
+- Docker
+- fswatch
+
 ## Install
 
 - Clone
-  `git clone git@github.com:CeballosAndres/samio.git ~/.samio`
+  `git clone https://github.com/CeballosAndres/samio.git ~/.samio`
 - Give permision
   `chmod +x -R ~/.samio/scripts`
 - Add to path
@@ -13,4 +19,4 @@ A simple script to work with AWS SAM in develop.
 
 ## Use
 
-`samio [lambda_name]`
+`samio lambda_name`
